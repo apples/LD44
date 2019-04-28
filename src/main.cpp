@@ -18,6 +18,7 @@
 #include <glm/gtx/intersect.hpp>
 #include <glm/gtc/matrix_inverse.hpp>
 #include <glm/gtc/noise.hpp>
+#include <glm/gtx/matrix_transform_2d.hpp>
 
 #include <sol.hpp>
 
@@ -181,13 +182,19 @@ public:
 
         framerate_buffer.reserve(10);
 
-        enable_lighting = true;
-        
         auto init_result = lua.safe_script_file("data/scripts/init.lua");
         if (!init_result.valid()) {
             sol::error err = init_result;
             throw std::runtime_error("Init error: "s + err.what());
         }
+
+        sprite_tex = sushi::load_texture_2d("data/textures/sprites.png", false, false, false, false);
+
+        sprite_mesh = sushi::load_static_mesh_data(
+            {{-.5f, .5f, 0.f},{-.5f, -.5f, 0.f},{.5f, -.5f, 0.f},{.5f, .5f, 0.f}},
+            {{0.f, 0.f, 1.f},{0.f, 0.f, 1.f},{0.f, 0.f, 1.f},{0.f, 0.f, 1.f}},
+            {{0.f, 0.f},{0.f, 1.f / 16.f},{1.f / 16.f, 1.f / 16.f},{1.f / 16.f, 0.f}},
+            {{{{0,0,0},{1,1,1},{2,2,2}}},{{{2,2,2},{3,3,3},{0,0,0}}}});
     }
 
     ~engine() {
@@ -214,12 +221,6 @@ public:
 
     auto handle_game_input(const SDL_Event& event) -> bool {
         switch (event.type) {
-            case SDL_KEYDOWN:
-                switch (event.key.keysym.scancode) {
-                    case SDL_SCANCODE_L: enable_lighting = !enable_lighting; break;
-                    default: return false;
-                }
-                return true;
             case SDL_QUIT:
                 std::cout << "Goodbye!" << std::endl;
                 return true;
@@ -320,49 +321,28 @@ public:
         };
 
         run_system("controller", delta);
-        run_system("physics", delta);
         run_system("scripting", delta);
 
         glClearColor(0,0,0,1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        auto proj = glm::ortho(-10.f, 10.f, 0.f, 15.f, 5.f, -5.f);
-        auto view = glm::mat4(1.f);
+        auto proj = glm::ortho(-10.f, 10.f, -7.5f, 7.5f, 5.f, -5.f);
 
         program_basic.bind();
         program_basic.set_cam_forward({0.0, 0.0, -1.0});
-        program_basic.set_enable_lighting(enable_lighting);
         program_basic.set_tint({1, 1, 1, 1});
         program_basic.set_hue(0);
         program_basic.set_saturation(1);
+        program_basic.set_normal_mat(glm::mat4(1));
+        sushi::set_texture(0, sprite_tex);
 
-        if (enable_lighting) {
-            using glm::vec3;
-            using glm::normalize;
-
-            const auto sky_dir = normalize(vec3{1, 1, 1});
-            const auto sky_color = vec3{1, 1, 1};
-            const auto ambient_color = vec3{0.5, 0.5, 0.5};
-
-            program_basic.set_sky_dir(sky_dir);
-            program_basic.set_sky_color(sky_color);
-            program_basic.set_ambient_color(ambient_color);
-        }
-
-        auto frustum = sushi::frustum(proj*view);
-
-        // Render entities
-        entities.visit([&](ember_database::ent_id eid, const component::position& position, const component::model& model) {
-            if (model.mesh && model.texture) {
-                const auto pos = glm::vec3(position.pos, 0);
-                if (frustum.contains(pos, 2)) {
-                    auto modelmat = glm::scale(glm::translate(glm::mat4(1.f), pos), glm::vec3{model.scale});
-                    program_basic.set_normal_mat(glm::inverseTranspose(view * modelmat));
-                    program_basic.set_MVP(proj * view * modelmat);
-                    sushi::set_texture(0, *model.texture);
-                    sushi::draw_mesh(*model.mesh);
-                }
-            }
+        entities.visit([&](ember_database::ent_id eid, const component::position& position, const component::sprite& sprite) {
+            const auto pos = glm::vec3(position.pos, 0);
+            auto modelmat = glm::translate(glm::mat4(1.f), pos);
+            auto offset = glm::translate(glm::mat3(1), glm::vec2{sprite.c / 16.f, sprite.r / 16.f});
+            program_basic.set_texcoord_mat(offset);
+            program_basic.set_MVP(proj * modelmat);
+            sushi::draw_mesh(sprite_mesh);
         });
 
         update_gui_state();
@@ -401,7 +381,8 @@ private:
     sol::table gui_state;
     sol::function update_gui_state;
     sol::table luakeys;
-    bool enable_lighting;
+    sushi::texture_2d sprite_tex;
+    sushi::static_mesh sprite_mesh;
 };
 
 std::function<void()> loop;

@@ -7,10 +7,11 @@ varying vec3 v_normal;
 
 uniform mat4 MVP;
 uniform mat4 normal_mat;
+uniform mat3 texcoord_mat;
 
 void main()
 {
-    v_texcoord = texcoord;
+    v_texcoord = vec2(texcoord_mat * vec3(texcoord, 1.0));
     v_normal = vec3(normal_mat * vec4(normal, 0.0));
     gl_Position = MVP * vec4(position, 1.0);
 }

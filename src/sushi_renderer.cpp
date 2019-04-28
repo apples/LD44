@@ -37,9 +37,9 @@ void sushi_renderer::draw_rectangle(const std::string& texture, const glm::vec4&
     program->bind();
     program->set_cam_forward({0.0, 0.0, -1.0});
     program->set_normal_mat(glm::inverseTranspose(model_mat));
+    program->set_texcoord_mat(glm::mat3(1));
     program->set_MVP(proj * model_mat);
     program->set_tint(color);
-    program->set_enable_lighting(false);
 
     sushi::set_texture(0, *texture_cache->get(texture));
     sushi::draw_mesh(rectangle_mesh);

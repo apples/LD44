@@ -10,15 +10,12 @@ basic_shader_program::basic_shader_program(const std::string& vert, const std::s
 
     uniforms.MVP = get_uniform_location("MVP");
     uniforms.normal_mat = get_uniform_location("normal_mat");
+    uniforms.texcoord_mat = get_uniform_location("texcoord_mat");
     uniforms.s_texture = get_uniform_location("s_texture");
     uniforms.cam_forward = get_uniform_location("cam_forward");
     uniforms.tint = get_uniform_location("tint");
     uniforms.hue = get_uniform_location("hue");
     uniforms.saturation = get_uniform_location("saturation");
-    uniforms.sky_dir = get_uniform_location("sky_dir");
-    uniforms.sky_color = get_uniform_location("sky_color");
-    uniforms.ambient_color = get_uniform_location("ambient_color");
-    uniforms.enable_lighting = get_uniform_location("enable_lighting");
 }
 
 void basic_shader_program::set_MVP(const glm::mat4& mat) {
@@ -27,6 +24,10 @@ void basic_shader_program::set_MVP(const glm::mat4& mat) {
 
 void basic_shader_program::set_normal_mat(const glm::mat4& mat) {
     sushi::set_current_program_uniform(uniforms.normal_mat, mat);
+}
+
+void basic_shader_program::set_texcoord_mat(const glm::mat3& mat) {
+    sushi::set_current_program_uniform(uniforms.texcoord_mat, mat);
 }
 
 void basic_shader_program::set_s_texture(GLint i) {
@@ -47,22 +48,6 @@ void basic_shader_program::set_hue(float f) {
 
 void basic_shader_program::set_saturation(float f) {
     sushi::set_current_program_uniform(uniforms.saturation, f);
-}
-
-void basic_shader_program::set_sky_dir(const glm::vec3& vec) {
-    sushi::set_current_program_uniform(uniforms.sky_dir, vec);
-}
-
-void basic_shader_program::set_sky_color(const glm::vec3& vec) {
-    sushi::set_current_program_uniform(uniforms.sky_color, vec);
-}
-
-void basic_shader_program::set_ambient_color(const glm::vec3& vec) {
-    sushi::set_current_program_uniform(uniforms.ambient_color, vec);
-}
-
-void basic_shader_program::set_enable_lighting(bool b) {
-    sushi::set_current_program_uniform(uniforms.enable_lighting, int(b));
 }
 
 msdf_shader_program::msdf_shader_program(const std::string& vertfile, const std::string& fragfile) :

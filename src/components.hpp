@@ -70,35 +70,21 @@ REGISTER(model,
          MEMBER(texture),
          MEMBER(scale))
 
+struct sprite {
+    int r;
+    int c;
+};
+
+REGISTER(sprite,
+         MEMBER(r),
+         MEMBER(c))
+
 struct controller {
     sol::table data;
 };
 
 REGISTER(controller,
          MEMBER(data))
-
-struct physics {
-    glm::vec2 vel;
-};
-
-REGISTER(physics,
-         MEMBER(vel))
-
-struct aabb {
-    glm::vec2 bottomleft;
-    glm::vec2 topright;
-};
-
-REGISTER(aabb,
-         MEMBER(bottomleft),
-         MEMBER(topright))
-
-struct collider {
-    std::function<void(ember_database::ent_id othereid)> collide;
-};
-
-REGISTER(collider,
-         MEMBER(collide))
 
 } //namespace component
 
