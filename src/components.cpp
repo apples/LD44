@@ -13,6 +13,8 @@ void register_all_components(sol::table& table) {
     register_type<model>(table);
     register_type<sprite>(table);
     register_type<controller>(table);
+    register_type<motion>(table);
+    register_type<body>(table);
 }
 
 } //namespace component

@@ -86,6 +86,28 @@ struct controller {
 REGISTER(controller,
          MEMBER(data))
 
+struct motion {
+    int dir_r = 0;
+    int dir_c = 0;
+    int delay = 0;
+    int next = 0;
+    std::function<void(ember_database::ent_id eid)> on_hit;
+};
+
+REGISTER(motion,
+         MEMBER(dir_r),
+         MEMBER(dir_c),
+         MEMBER(delay),
+         MEMBER(next),
+         MEMBER(on_hit))
+
+struct body {
+    bool stops = false;
+};
+
+REGISTER(body,
+         MEMBER(stops))
+
 } //namespace component
 
 #undef TAG

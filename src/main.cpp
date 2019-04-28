@@ -195,6 +195,8 @@ public:
             {{0.f, 0.f, 1.f},{0.f, 0.f, 1.f},{0.f, 0.f, 1.f},{0.f, 0.f, 1.f}},
             {{0.f, 0.f},{0.f, 1.f / 16.f},{1.f / 16.f, 1.f / 16.f},{1.f / 16.f, 0.f}},
             {{{{0,0,0},{1,1,1},{2,2,2}}},{{{2,2,2},{3,3,3},{0,0,0}}}});
+        
+        next_tick = std::chrono::duration_cast<clock::duration>(std::chrono::duration<std::int64_t, std::ratio<1, 30>>(1));
     }
 
     ~engine() {
@@ -288,14 +290,6 @@ public:
             if (handle_game_input(event)) break;
         }
 
-        const Uint8 *keys = SDL_GetKeyboardState(NULL);
-        luakeys["left"] = bool(keys[SDL_SCANCODE_LEFT]);
-        luakeys["right"] = bool(keys[SDL_SCANCODE_RIGHT]);
-        luakeys["up"] = bool(keys[SDL_SCANCODE_UP]);
-        luakeys["down"] = bool(keys[SDL_SCANCODE_DOWN]);
-        luakeys["shoot"] = bool(keys[SDL_SCANCODE_SPACE]);
-        luakeys["slow"] = bool(keys[SDL_SCANCODE_LSHIFT]);
-
         framerate_buffer.push_back(delta_time);
 
         if (framerate_buffer.size() >= 10) {
@@ -320,13 +314,37 @@ public:
             }
         };
 
-        run_system("controller", delta);
-        run_system("scripting", delta);
+        next_tick -= delta_time;
+
+        if (next_tick <= 0s) {
+            const Uint8 *keys = SDL_GetKeyboardState(nullptr);
+
+            auto set_key = [&](const std::string &name, int scancode) {
+                auto down = bool(keys[scancode]);
+                luakeys[name + "_pressed"] = down && !bool(luakeys[name]);
+                luakeys[name] = down;
+            };
+
+            set_key("left", SDL_SCANCODE_LEFT);
+            set_key("right", SDL_SCANCODE_RIGHT);
+            set_key("up", SDL_SCANCODE_UP);
+            set_key("down", SDL_SCANCODE_DOWN);
+            set_key("shoot", SDL_SCANCODE_SPACE);
+            set_key("slow", SDL_SCANCODE_LSHIFT);
+            set_key("reset", SDL_SCANCODE_R);
+
+            run_system("resetter");
+            run_system("controller", 1.0 / 30.0);
+            run_system("scripting", 1.0 / 30.0);
+            run_system("motion", 1.0 / 30.0);
+
+            next_tick += std::chrono::duration_cast<clock::duration>(std::chrono::duration<std::int64_t, std::ratio<1, 30>>(1));
+        }
 
         glClearColor(0,0,0,1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        auto proj = glm::ortho(-10.f, 10.f, -7.5f, 7.5f, 5.f, -5.f);
+        auto proj = glm::ortho(-4.5f, 15.5f, 0.5f, 15.5f, 5.f, -5.f);
 
         program_basic.bind();
         program_basic.set_cam_forward({0.0, 0.0, -1.0});
@@ -383,6 +401,7 @@ private:
     sol::table luakeys;
     sushi::texture_2d sprite_tex;
     sushi::static_mesh sprite_mesh;
+    clock::duration next_tick;
 };
 
 std::function<void()> loop;

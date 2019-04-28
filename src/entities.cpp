@@ -33,7 +33,7 @@ void register_type<ember_database>(sol::table& lua) {
         },
         "visit", [](ember_database& db, sol::protected_function func){
             db.visit([&func](ember_database::ent_id eid) {
-                auto result = func(eid);
+                auto result = func(std::move(eid));
                 if (!result.valid()) {
                     sol::error error = result;
                     throw std::runtime_error(std::string("ember_database.visit(): ") + error.what());
