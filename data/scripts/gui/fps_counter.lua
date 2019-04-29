@@ -13,7 +13,7 @@ function fps_counter:render()
         {
             halign='right',
             valign='top',
-            height = 24,
+            height = 8,
             color = '#f0f',
             text = self.props.fps,
         }

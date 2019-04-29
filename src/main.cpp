@@ -157,19 +157,6 @@ public:
             focused_widget = widget->weak_from_this();
         };
 
-        gui_state = lua.create_named_table("gui_state");
-        gui_state["fps"] = 0;
-        gui_state["version"] = "ALPHA 0.0.0";
-
-        auto init_gui_result = lua.do_file("data/scripts/init_gui.lua");
-
-        if (!init_gui_result.valid()) {
-            sol::error err = init_gui_result;
-            throw std::runtime_error("init_gui(): "s + err.what());
-        }
-
-        update_gui_state = lua["update_gui_state"];
-
         luakeys = lua.create_named_table("keys");
         luakeys["left"] = false;
         luakeys["right"] = false;
@@ -187,6 +174,18 @@ public:
             sol::error err = init_result;
             throw std::runtime_error("Init error: "s + err.what());
         }
+
+        gui_state = lua["gui_state"];
+        gui_state["version"] = "ALPHA 0.0.0";
+
+        auto init_gui_result = lua.do_file("data/scripts/init_gui.lua");
+
+        if (!init_gui_result.valid()) {
+            sol::error err = init_gui_result;
+            throw std::runtime_error("init_gui(): "s + err.what());
+        }
+
+        update_gui_state = lua["update_gui_state"];
 
         sprite_tex = sushi::load_texture_2d("data/textures/sprites.png", false, false, false, false);
 
@@ -337,6 +336,7 @@ public:
             run_system("controller", 1.0 / 30.0);
             run_system("scripting", 1.0 / 30.0);
             run_system("motion", 1.0 / 30.0);
+            run_system("gui");
 
             next_tick += std::chrono::duration_cast<clock::duration>(std::chrono::duration<std::int64_t, std::ratio<1, 30>>(1));
         }

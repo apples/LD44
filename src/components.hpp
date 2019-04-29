@@ -103,10 +103,14 @@ REGISTER(motion,
 
 struct body {
     bool stops = false;
+    bool coin = false;
+    bool hurts = false;
 };
 
 REGISTER(body,
-         MEMBER(stops))
+         MEMBER(stops),
+         MEMBER(coin),
+         MEMBER(hurts))
 
 } //namespace component
 

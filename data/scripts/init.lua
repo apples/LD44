@@ -1,6 +1,8 @@
 local engine = require('engine')
 local player = require('archetypes.player')
 local wall = require('archetypes.wall')
+local coin = require('archetypes.coin')
+local spike = require('archetypes.spike')
 
 config = {
 }
@@ -12,6 +14,14 @@ for i = 1, 15 do
         board[i][j] = {}
     end
 end
+
+coins = 0
+
+gui_state = {
+    coins = 0,
+    fps = 0,
+    version = ''
+}
 
 function create_entity(archetype, r, c, ...)
     table.insert(board[r][c], archetype(r, c, ...))
@@ -25,6 +35,10 @@ function add_stuff_at(str, r)
             create_entity(wall, r, i)
         elseif c == '@' then
             create_entity(player, r, i)
+        elseif c == 'O' then
+            create_entity(coin, r, i)
+        elseif c == 'X' then
+            create_entity(spike, r, i)
         end
     end
 end
@@ -49,12 +63,12 @@ stages = {
             '               '
             '               '
             '       #       '
-            '  #        #   '
-            '     #  #      '
+            '  #O      O#   '
+            '     #O #      '
             '       @    #  '
             '    #          '
-            '         @   # '
-            '   #    ##     '
+            '         @  O# '
+            '   # O  X#     '
             '     #         '
             '               '
             '               '
@@ -74,6 +88,8 @@ function reset()
             row[c] = {}
         end
     end
+
+    coins = 0
 
     stages[current_stage]()
 end

@@ -12,7 +12,7 @@ return function(r, c)
     sprite.c = 0
 
     local script = component.script.new()
-    script.next_tick = -1
+    script.next_tick = 0
     script.name = 'player'
 
     local controller = component.controller.new()

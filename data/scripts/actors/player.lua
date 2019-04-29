@@ -2,6 +2,32 @@ local engine = require('engine')
 
 local player = {}
 
+function player.update(eid, dt)
+    local pos = engine.entities:get_component(eid, component.position)
+    local r = pos.pos.y
+    local c = pos.pos.x
+
+    local stack = board[r][c]
+
+    for _,e in ipairs(stack) do
+        if engine.entities:has_component(e, component.body) then
+            local body = engine.entities:get_component(e, component.body)
+            if body.coin then
+                coins = coins + 1
+                engine.entities:destroy_entity(e)
+            end
+        end
+    end
+end
+
+function player.on_hurt(eid, other)
+    if coins <= 0 then
+        engine.entities:destroy_entity(eid)
+    else
+        coins = coins - 1
+    end
+end
+
 function player.controller(eid, keys, dt)
     local pos = engine.entities:get_component(eid, component.position)
     local con = engine.entities:get_component(eid, component.controller)

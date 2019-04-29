@@ -30,8 +30,17 @@ function controller.visit(dt)
                         local body = engine.entities:get_component(v, component.body)
                         if body.stops then
                             engine.entities:remove_component(eid, component.motion)
-                            table.insert(board[cur_r][cur_c], eid)
-                            return
+                            next_r = cur_r
+                            next_c = cur_c
+                        end
+                        if body.hurts then
+                            if engine.entities:has_component(eid, component.script) then
+                                local script = engine.entities:get_component(eid, component.script)
+                                local script_impl = require('actors.' .. script.name)
+                                if script_impl.on_hurt then
+                                    script_impl.on_hurt(eid, v)
+                                end
+                            end
                         end
                     end
                 end
@@ -41,7 +50,9 @@ function controller.visit(dt)
                 position.pos.x = next_c
                 position.pos.y = next_r
 
-                motion.next = motion.delay
+                if engine.entities:has_component(eid, component.motion) then
+                    motion.next = motion.delay
+                end
             else
                 motion.next = motion.next - 1
             end
