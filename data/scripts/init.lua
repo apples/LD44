@@ -24,7 +24,13 @@ gui_state = {
 }
 
 local stage_list = {
+    stages.easy,
+    stages.maze,
+    stages.brother,
+    stages.collision,
     stages.teamwork,
+    stages.collision_hard,
+    stages.alternate,
     stages.winner
 }
 

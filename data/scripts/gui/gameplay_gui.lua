@@ -14,7 +14,6 @@ end
 
 function gameplay_gui:render()
     return vdom.create_element('widget', { width = '100%', height = '100%' },
-        vdom.create_element(fps_counter, { fps = self.state.fps }),
         vdom.create_element('panel',
             {
                 width = '25%',

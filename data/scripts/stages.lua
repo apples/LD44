@@ -40,6 +40,82 @@ end
 
 local stages = {}
 
+function stages.easy()
+    create_stage
+        '               '
+        '               '
+        '               '
+        '       X       '
+        '           >   '
+        '               '
+        '               '
+        '  #O   @    X  '
+        '               '
+        '               '
+        '               '
+        '       X       '
+        '               '
+        '               '
+        '               '
+end
+
+function stages.maze()
+    create_stage
+        '               '
+        '      #        '
+        ' #             '
+        '            #  '
+        '  #        O # '
+        '           #   '
+        '   # #       # '
+        '               '
+        '    #          '
+        ' X           # '
+        '             > '
+        '   #           '
+        '#         #    '
+        '    #  @    #  '
+        '               '
+end
+
+function stages.brother()
+    create_stage
+        '               '
+        '               '
+        '  #            '
+        ' #@#           '
+        '             > '
+        '  X            '
+        '               '
+        'XXXXXXX#XXXXXXX'
+        '  #    O     # '
+        '      #        '
+        ' #            #'
+        '       #     # '
+        '#              '
+        '      O#       '
+        ' #     @      #'
+end
+
+function stages.collision()
+    create_stage
+        '   #       #   '
+        '       >       '
+        '               '
+        '               '
+        '       #       '
+        '      #@#      '
+        '  #         #  '
+        ' #@          # '
+        '  #    X    #  '
+        '               '
+        '               '
+        '               '
+        '               '
+        '               '
+        '               '
+end
+
 function stages.teamwork()
     create_stage
         '               '
@@ -57,6 +133,44 @@ function stages.teamwork()
         '          >    '
         '               '
         '               '
+end
+
+function stages.collision_hard()
+    create_stage
+        '   #       #   '
+        '  #            '
+        '               '
+        '               '
+        '       #       '
+        '      #@#      '
+        '  #         #  '
+        ' #@          # '
+        '  #    X    #  '
+        '               '
+        '               '
+        '               '
+        '          >    '
+        '    #          '
+        '               '
+end
+
+function stages.alternate()
+    create_stage
+        '     > ## X  X '
+        '    #  #      #'
+        '      X#     O '
+        '   #   #     O '
+        ' # # # #     O '
+        '  #    # #    X'
+        '#      #    ## '
+        '  O   X##  O # '
+        ' X     #   #O# '
+        '       #X  O#  '
+        '   #  O# X#    '
+        '#      ##   O# '
+        '      ##OO#    '
+        '       #       '
+        '   @   # #@    '
 end
 
 function stages.winner()
