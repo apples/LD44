@@ -1,4 +1,5 @@
 local engine = require('engine')
+local linq = require('linq')
 
 local player = {}
 
@@ -7,25 +8,35 @@ function player.update(eid, dt)
     local r = pos.pos.y
     local c = pos.pos.x
 
-    local stack = board[r][c]
-
-    for _,e in ipairs(stack) do
-        if engine.entities:has_component(e, component.body) then
-            local body = engine.entities:get_component(e, component.body)
-            if body.coin then
-                coins = coins + 1
-                engine.entities:destroy_entity(e)
+    board[r][c] = linq(board[r][c])
+        :where(
+            function (e)
+                if engine.entities:has_component(e, component.body) then
+                    local body = engine.entities:get_component(e, component.body)
+                    if body.coin then
+                        coins = coins + 1
+                        engine.entities:destroy_entity(e)
+                        return false
+                    end
+                end
+                return true
             end
-        end
-    end
+        )
+        :tolist()
 end
 
 function player.on_hurt(eid, other)
     if coins <= 0 then
         engine.entities:destroy_entity(eid)
+        return false
     else
         coins = coins - 1
+        return true
     end
+end
+
+function player.on_exit(eid, other)
+    return true
 end
 
 function player.controller(eid, keys, dt)

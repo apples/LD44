@@ -1,13 +1,13 @@
 local vdom = require('vdom')
 
-local coin_counter = vdom.component()
+local stage_counter = vdom.component()
 
-function coin_counter:constructor(props)
-    assert(props.coins)
+function stage_counter:constructor(props)
+    assert(props.stage)
     self:super(props)
 end
 
-function coin_counter:render()
+function stage_counter:render()
     return vdom.create_element(
         'label',
         {
@@ -16,10 +16,10 @@ function coin_counter:render()
             height = 28,
             color = '#417089',
             left = 27 * 4,
-            top = 35 * 4,
-            text = tostring(self.props.coins),
+            top = 28 * 4,
+            text = tostring(self.props.stage),
         }
     )
 end
 
-return coin_counter
+return stage_counter

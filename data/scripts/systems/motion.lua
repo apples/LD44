@@ -4,6 +4,8 @@ local visitor = require('visitor')
 local controller = {}
 
 function controller.visit(dt)
+    local do_reset = false
+
     visitor.visit(
         {component.motion, component.position},
         function (eid, motion, position)
@@ -38,7 +40,25 @@ function controller.visit(dt)
                                 local script = engine.entities:get_component(eid, component.script)
                                 local script_impl = require('actors.' .. script.name)
                                 if script_impl.on_hurt then
-                                    script_impl.on_hurt(eid, v)
+                                    local alive = script_impl.on_hurt(eid, v)
+                                    if not alive then
+                                        return
+                                    end
+                                end
+                            end
+                        end
+                        if body.exit then
+                            if engine.entities:has_component(eid, component.script) then
+                                local script = engine.entities:get_component(eid, component.script)
+                                local script_impl = require('actors.' .. script.name)
+                                if script_impl.on_exit then
+                                    local done = script_impl.on_exit(eid, v)
+                                    if done then
+                                        engine.entities:destroy_entity(eid)
+                                        current_stage = current_stage + 1
+                                        do_reset = true
+                                        return
+                                    end
                                 end
                             end
                         end
@@ -58,6 +78,10 @@ function controller.visit(dt)
             end
         end
     )
+
+    if do_reset then
+        reset()
+    end
 end
 
 return controller

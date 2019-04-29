@@ -8,11 +8,11 @@ return function(r, c)
     position.pos.y = r
 
     local sprite = component.sprite.new()
-    sprite.r = 4
+    sprite.r = 3
     sprite.c = 0
 
     local body = component.body.new()
-    body.coin = true
+    body.exit = true
 
     engine.entities:add_component(ent, position)
     engine.entities:add_component(ent, sprite)

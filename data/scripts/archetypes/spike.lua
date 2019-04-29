@@ -21,4 +21,3 @@ return function(r, c)
 
     return ent
 end
-

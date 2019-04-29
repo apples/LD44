@@ -745,6 +745,10 @@ public:
      * @param eid ID of the Entity to erase.
      */
     void destroy_entity(ent_id eid) {
+        if (!entities[eid].components.get(0)) {
+            throw std::logic_error("ginseng::database::destroy_entity: Entity is already destroyed.");
+        }
+
         for (dynamic_bitset::size_type i = 1; i < entities[eid].components.size(); ++i) {
             if (entities[eid].components.get(i)) {
                 component_sets[i]->remove(eid);

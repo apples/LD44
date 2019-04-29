@@ -105,12 +105,14 @@ struct body {
     bool stops = false;
     bool coin = false;
     bool hurts = false;
+    bool exit = false;
 };
 
 REGISTER(body,
          MEMBER(stops),
          MEMBER(coin),
-         MEMBER(hurts))
+         MEMBER(hurts),
+         MEMBER(exit))
 
 } //namespace component
 
