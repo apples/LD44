@@ -22,6 +22,11 @@
 
 #include <sol.hpp>
 
+#include <sol.hpp>
+#include <soloud.h>
+#include <soloud_wav.h>
+#include <soloud_wavstream.h>
+
 #include <emscripten.h>
 #include <emscripten/html5.h>
 
@@ -64,6 +69,8 @@ public:
         lua_gui::register_types(lua.globals());
 
         register_engine_module();
+
+        soloud.init();
 
         {
             auto json_table = lua.create_table();
@@ -140,6 +147,35 @@ public:
         font_cache = [](const std::string& fontname) {
             return msdf_font("data/fonts/"+fontname+".ttf");
         };
+
+        sfx_cache = resource_cache<SoLoud::Wav, std::string>{[](const std::string& name) {
+            auto wav = std::make_shared<SoLoud::Wav>();
+            wav->load(("data/sfx/"+name+".wav").c_str());
+            return wav;
+        }};
+
+        bgm_cache = resource_cache<SoLoud::Wav, std::string>{[volume = double(config["volume"])](const std::string& name) {
+            auto wav = std::make_shared<SoLoud::Wav>();
+            wav->load(("data/bgm/"+name+".ogg").c_str());
+            wav->setLooping(1);
+            wav->setVolume(volume);
+            return wav;
+        }};
+
+        auto play_sfx = [this](const std::string& name) {
+            auto wav_ptr = sfx_cache.get(name);
+            soloud.stopAudioSource(*wav_ptr);
+            soloud.play(*wav_ptr);
+        };
+
+        auto play_bgm = [this](const std::string& name) {
+            auto wav_ptr = bgm_cache.get(name);
+            soloud.stopAudioSource(*wav_ptr);
+            soloud.play(*wav_ptr);
+        };
+
+        lua["play_sfx"] = play_sfx;
+        lua["play_bgm"] = play_bgm;
 
         renderer = sushi_renderer(
             {display_width, display_height},
@@ -390,6 +426,8 @@ private:
     resource_cache<sushi::static_mesh, std::string> mesh_cache;
     resource_cache<sushi::texture_2d, std::string> texture_cache;
     resource_cache<msdf_font, std::string> font_cache;
+    resource_cache<SoLoud::Wav, std::string> sfx_cache;
+    resource_cache<SoLoud::Wav, std::string> bgm_cache;
     ember_database entities;
     sushi_renderer renderer;
     std::shared_ptr<gui::widget> root_widget;
@@ -402,6 +440,7 @@ private:
     sushi::texture_2d sprite_tex;
     sushi::static_mesh sprite_mesh;
     clock::duration next_tick;
+    SoLoud::Soloud soloud;
 };
 
 std::function<void()> loop;

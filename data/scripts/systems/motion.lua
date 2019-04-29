@@ -80,6 +80,7 @@ function controller.visit(dt)
     )
 
     if do_reset then
+        play_sfx('portal')
         reset()
     end
 end

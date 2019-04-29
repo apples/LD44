@@ -8,6 +8,8 @@ function player.update(eid, dt)
     local r = pos.pos.y
     local c = pos.pos.x
 
+    local pickup_coin = false
+
     board[r][c] = linq(board[r][c])
         :where(
             function (e)
@@ -16,6 +18,7 @@ function player.update(eid, dt)
                     if body.coin then
                         coins = coins + 1
                         engine.entities:destroy_entity(e)
+                        pickup_coin = true
                         return false
                     end
                 end
@@ -23,9 +26,14 @@ function player.update(eid, dt)
             end
         )
         :tolist()
+    
+    if pickup_coin then
+        play_sfx("pickup_coin")
+    end
 end
 
 function player.on_hurt(eid, other)
+    play_sfx('hurt')
     if coins <= 0 then
         engine.entities:destroy_entity(eid)
         return false
