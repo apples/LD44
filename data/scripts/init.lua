@@ -1,6 +1,8 @@
 local engine = require('engine')
 local stages = require('stages')
 
+play_bgm('bgm')
+
 config = {
 }
 

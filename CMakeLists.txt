@@ -58,7 +58,7 @@ if(EMSCRIPTEN)
     file(GLOB_RECURSE GAME_CPP_SOURCES CONFIGURE_DEPENDS src/*.cpp src/*.hpp)
     add_executable(game ${GAME_CPP_SOURCES} ${GAME_JS_SOURCES})
     string(CONCAT GAME_LINK_FLAGS
-        " -s TOTAL_MEMORY=33554432"
+        " -s TOTAL_MEMORY=67108864"
         " -s DISABLE_EXCEPTION_CATCHING=0"
         " -s FORCE_FILESYSTEM=1"
         " -s BINARYEN_TRAP_MODE=clamp"
