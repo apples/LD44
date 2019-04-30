@@ -116,6 +116,25 @@ function stages.collision()
         '               '
 end
 
+function stages.limited()
+    create_stage
+        '  X        XX  '
+        ' >  XXX        '
+        'X              '
+        ' X     X     X '
+        '   X    X X    '
+        '  X         X  '
+        '       X      X'
+        ' X    X        '
+        '   X       X   '
+        'X       X      '
+        '    X          '
+        '               '
+        ' X             '
+        ' @  OOOOOOO  X '
+        '               '
+end
+
 function stages.teamwork()
     create_stage
         '               '

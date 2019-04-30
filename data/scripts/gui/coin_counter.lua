@@ -14,7 +14,7 @@ function coin_counter:render()
             halign='left',
             valign='top',
             height = 28,
-            color = '#417089',
+            color = '#FDF7ED',
             left = 27 * 4,
             top = 35 * 4,
             text = tostring(self.props.coins),

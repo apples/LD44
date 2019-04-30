@@ -28,6 +28,7 @@ local stage_list = {
     stages.maze,
     stages.brother,
     stages.collision,
+    stages.limited,
     stages.teamwork,
     stages.collision_hard,
     stages.alternate,
