@@ -1,4 +1,5 @@
 local vdom = require('vdom')
+local counter = require('gui.counter')
 
 local stage_counter = vdom.component()
 
@@ -9,16 +10,14 @@ end
 
 function stage_counter:render()
     return vdom.create_element(
-        'label',
+        'panel',
         {
             halign='left',
             valign='top',
-            height = 28,
-            color = '#417089',
-            left = 27 * 4,
-            top = 28 * 4,
-            text = tostring(self.props.stage),
-        }
+            left = 31 * 4,
+            top = 36 * 4,
+        },
+        vdom.create_element(counter, { value = self.props.stage })
     )
 end
 
